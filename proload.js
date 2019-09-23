@@ -55,14 +55,17 @@ function createRequest(uri, config, resolve, reject) {
       }
     })
     .on("end", () => {
-      const dataBuffer = Buffer.concat(dataChunks);
       spinnerInstance.succeed(successMessage || "100%");
 
       if (spinner === undefined || spinner.instance === undefined) {
         spinnerInstance.stop();
       }
 
-      setTimeout(() => resolve(dataBuffer), SAFE_RESOLVE_TIMEOUT);
+      setTimeout(() => {
+        const dataBuffer = Buffer.concat(dataChunks);
+
+        resolve(dataBuffer);
+      }, SAFE_RESOLVE_TIMEOUT);
     });
 }
 
