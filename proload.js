@@ -19,7 +19,7 @@ function createRequest(uri, config, resolve, reject) {
     _spinner.instance = ora();
   }
 
-  const { instance: spinnerInstance, prefix, postText, suffix } = _spinner;
+  const { instance: spinnerInstance, progressPrefix, progressSuffix, successMessage } = _spinner;
 
   const dataChunks = [];
   let currentLength = 0;
@@ -32,7 +32,7 @@ function createRequest(uri, config, resolve, reject) {
         const contentLength = Number(res.headers["content-length"]);
         if (contentLength > 0) {
           totalLength = contentLength;
-          spinnerInstance.start(`${prefix || ""}  0%${suffix || ""}`);
+          spinnerInstance.start(`${progressPrefix || ""}  0%${progressSuffix || ""}`);
 
           return;
         }
@@ -47,14 +47,14 @@ function createRequest(uri, config, resolve, reject) {
 
       if (totalLength !== 0) {
         const percentage = numeral(currentLength / totalLength).format("0%");
-        const text = `${prefix || ""}${percentage.padStart(4, " ")}${suffix || ""}`;
+        const text = `${progressPrefix || ""}${percentage.padStart(4, " ")}${progressSuffix || ""}`;
 
         spinnerInstance.text = text;
       }
     })
     .on("end", () => {
       const dataBuffer = Buffer.concat(dataChunks);
-      spinnerInstance.succeed(postText || "100%");
+      spinnerInstance.succeed(successMessage || "100%");
 
       if (spinner === undefined || spinner.instance === undefined) {
         spinnerInstance.stop();
