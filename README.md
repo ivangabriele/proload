@@ -5,7 +5,7 @@
 [![Build Status][img-travis]][link-travis]
 [![Code Coverage][img-coveralls]][link-coveralls]
 
-File & Buffer downloader with a progress bar, compatible with [ora][link-ora].
+File & Buffer URI downloader with a progress bar, compatible with [ora][link-ora].
 
 ## Install
 
