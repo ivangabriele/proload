@@ -6,6 +6,8 @@ plugins:
   - prettier
 
 rules:
+  no-console: ["error", { allow: ["info", "error", "warn"] }]
+
   prettier/prettier: ["error"]
 
 overrides:
