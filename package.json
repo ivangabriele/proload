@@ -1,0 +1,55 @@
+{
+  "name": "proload",
+  "version": "0.0.0",
+  "license": "MIT",
+  "description": "File & Buffer downloader with a progress bar, compatible with ora.",
+  "main": "./proload.js",
+  "types": "./proload.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "ci:generate:release_notes": "node ./scripts/ci/generate_release_notes.js",
+    "test": "npm run test:lint && npm run test:unit",
+    "test:lint": "eslint -p ./tsconfig.json",
+    "test:unit": "jest --coverage ./*.test.js",
+    "test:watch": "npm run test:unit --watch",
+    "preversion": "npm test",
+    "postversion": "git push origin HEAD && git push --tags"
+  },
+  "dependencies": {
+    "make-dir": "3.0.0",
+    "numeral": "2.0.6",
+    "ora": "3.4.0",
+    "request": "2.88.0",
+    "rorre": "1.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.18",
+    "@types/node": "12.7.5",
+    "@types/request": "2.48.3",
+    "coveralls": "3.0.6",
+    "eslint": "6.4.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-config-prettier": "6.3.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "3.1.1",
+    "jest": "24.9.0",
+    "jest-mock-process": "1.2.0",
+    "keep-a-changelog": "0.8.1",
+    "prettier": "1.18.2"
+  },
+  "keywords": [
+    "data",
+    "dummy",
+    "generate",
+    "generator",
+    "sample"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivangabriele/proload.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ivangabriele/proload/issues"
+  },
+  "homepage": "https://github.com/ivangabriele/proload#readme"
+}
