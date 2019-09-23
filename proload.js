@@ -4,6 +4,8 @@ const ora = require("ora");
 const request = require("request");
 const rorre = require("rorre");
 
+const SAFE_RESOLVE_TIMEOUT = 1000;
+
 const E = rorre.declare({
   PRM_DFP_NOT_STRING: "<destFilePath> must be a string or left undefined to get a data buffer.",
   PRM_SPR_NOT_STRING: "<spinner> must be an instance or Ora.",
@@ -60,7 +62,7 @@ function createRequest(uri, config, resolve, reject) {
         spinnerInstance.stop();
       }
 
-      resolve(dataBuffer);
+      setTimeout(() => resolve(dataBuffer), SAFE_RESOLVE_TIMEOUT);
     });
 }
 
