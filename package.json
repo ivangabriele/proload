@@ -38,11 +38,11 @@
     "prettier": "1.18.2"
   },
   "keywords": [
-    "data",
-    "dummy",
-    "generate",
-    "generator",
-    "sample"
+    "cli",
+    "download",
+    "downloader",
+    "ora",
+    "progress"
   ],
   "repository": {
     "type": "git",
