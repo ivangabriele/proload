@@ -7,6 +7,9 @@
 /.vscode/settings.json
 /RELEASE_NOTES.md
 
+# Used for tests:
+/test.*
+
 ### Node ###
 
 # Logs
