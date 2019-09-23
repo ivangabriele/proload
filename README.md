@@ -82,20 +82,15 @@ const spinner = ora();
 ### Get Started
 
 ```bash
-yarn
+npm i
 ```
 
 ### Test
 
-- Lint Tests: `yarn test:lint`
-- Unit Tests: `yarn test:unit`
-- Unit Tests (watch): `yarn test:watch`
-
-### Generate Data
-
-```bash
-yarn data:generate [fr|en]...
-```
+- All Tests: `npm test`
+- Lint Tests: `npm run test:lint`
+- Unit Tests: `npm run test:unit`
+- Unit Tests (watch): `npm run test:watch`
 
 ---
 
