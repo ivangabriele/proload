@@ -21,7 +21,7 @@ npm i -D proload
 import proload from "proload";
 
 (async () => {
-  const dataBuffer = await proload("http://www.gutenberg.org/cache/epub/15557/pg15557.txt");
+  const dataBuffer = await proload("https://www.gutenberg.org/files/308/308-h.zip");
 
   console.log(dataBuffer.toString());
 })();
@@ -33,7 +33,7 @@ import proload from "proload";
 import proload from "proload";
 
 (async () => {
-  await proload("http://www.gutenberg.org/cache/epub/15557/pg15557.txt", "./myBook.txt");
+  await proload("https://www.gutenberg.org/files/308/308-h.zip", "./Three Men in a Boat.zip");
 })();
 ```
 
@@ -46,7 +46,7 @@ import proload from "proload";
 const spinner = ora();
 
 (async () => {
-  const uri = "http://www.gutenberg.org/cache/epub/15557/pg15557.txt";
+  const uri = "https://www.gutenberg.org/files/308/308-h.zip";
   const options = {
     spinner: {
       instance: spinner
@@ -55,7 +55,7 @@ const spinner = ora();
 
   const dataBuffer = await proload(uri, options);
   // Or:
-  await proload(uri, "./myBook.txt", options);
+  await proload(uri, "./Three Men in a Boat.zip", options);
 
   // Don't forget that the spinner is on your side, so you will have to stop it yourself
   // or do something else with it:
