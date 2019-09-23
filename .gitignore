@@ -7,9 +7,6 @@
 /.vscode/settings.json
 /RELEASE_NOTES.md
 
-# Used for development purposes in order to control data generation steps:
-/.data
-
 ### Node ###
 
 # Logs
