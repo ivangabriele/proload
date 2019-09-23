@@ -1,0 +1,23 @@
+### Project ###
+
+/coverage
+/dist
+/node_modules
+
+/.vscode/settings.json
+/RELEASE_NOTES.md
+
+# Used for development purposes in order to control data generation steps:
+/.data
+
+### Node ###
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
