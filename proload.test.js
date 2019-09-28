@@ -6,6 +6,7 @@ const rimraf = require("rimraf");
 const proload = require("./proload");
 
 const TEST_DIR_PATH = "./.test";
+const TEST_TIMEOUT = 120000;
 
 const FILES = [
   {
@@ -21,8 +22,6 @@ const FILES = [
     fileUri: "http://www.lexique.org/databases/Lexique383/Lexique383.tsv"
   }
 ];
-
-const TIMEOUT = 30000;
 
 describe("proload()", () => {
   let mockStderr;
@@ -53,7 +52,7 @@ describe("proload()", () => {
             expect(mockStderr).toHaveBeenCalled();
             expect(dataBuffer.length).toStrictEqual(fileSize);
           },
-          TIMEOUT
+          TEST_TIMEOUT
         );
       });
 
@@ -66,7 +65,7 @@ describe("proload()", () => {
             expect(mockStderr).toHaveBeenCalled();
             expect(fs.readFileSync(filePath).length).toStrictEqual(fileSize);
           },
-          TIMEOUT
+          TEST_TIMEOUT
         );
       });
 
@@ -88,7 +87,7 @@ describe("proload()", () => {
               expect(mockStderr).toHaveBeenCalled();
               expect(dataBuffer.length).toStrictEqual(fileSize);
             },
-            TIMEOUT
+            TEST_TIMEOUT
           );
         });
 
@@ -108,7 +107,7 @@ describe("proload()", () => {
               expect(mockStderr).toHaveBeenCalled();
               expect(fs.readFileSync(filePath).length).toStrictEqual(fileSize);
             },
-            TIMEOUT
+            TEST_TIMEOUT
           );
         });
       });
