@@ -1,6 +1,8 @@
 const fs = require("fs");
+const makeDir = require("make-dir");
 const numeral = require("numeral");
 const ora = require("ora");
+const path = require("path");
 const request = require("request");
 const rorre = require("rorre");
 
@@ -104,6 +106,16 @@ function proload(uri, destFilePathOrOptions, options) {
 
     return new Promise((resolve, reject) => {
       if (typeof destFilePathOrOptions === "string") {
+        const destFilePath = destFilePathOrOptions.replace(path.sep, "/");
+        if (/\//.test(destFilePath)) {
+          const destFilePaths = destFilePath.split("/");
+          const destDirPath = destFilePaths.slice(0, destFilePaths.length - 1).join("/");
+
+          if (!fs.existsSync(destDirPath)) {
+            makeDir.sync(destDirPath);
+          }
+        }
+
         createRequest(uri, config, resolve, reject).pipe(
           fs.createWriteStream(destFilePathOrOptions)
         );
