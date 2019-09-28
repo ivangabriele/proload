@@ -7,6 +7,18 @@
 
 File & Buffer URI downloader with a progress bar, compatible with [ora][link-ora].
 
+## TOC
+
+1. [Install](#install)
+1. [Features](#features)
+1. [Options](#options)
+1. [Examples](#examples)
+   1. [Download to Buffer](#download-to-buffer)
+   1. [Download to File](#download-to-file)
+   1. [Existing Ora Spinner](#existing-ora-spinner)
+1. [Known Issues](#known-issues)
+1. [Contribute](#contribute)
+
 ## Install
 
 ```bash
@@ -15,9 +27,23 @@ npm i -D proload
 
 ### Features
 
-- Ora optional integration (= ability to attach an existing ora instance)
+- Ora optional integration (= ability to attach an existing ora instance).
 - Automatically creates the destination directory if it does not exist.
 - Can return a buffer of the data instead of creating a new file.
+
+## Options
+
+```ts
+{
+  request: request.CoreOptions; // @see https://github.com/request/request#requestoptions-callback
+  spinner: {
+    instance: ora.Ora;
+    progressPrefix: string; // Prefix message while downloading (before the `XXX%`)
+    progressSuffix: string; // Suffix message while downloading (after the `XXX%`)
+    successMessage: string; // Success message once the download has ended
+  }
+}
+```
 
 ## Examples
 
@@ -69,19 +95,11 @@ const spinner = ora();
 })();
 ```
 
-## Options
+## Known Issues
 
-```ts
-{
-  request: request.CoreOptions; // @see https://github.com/request/request#requestoptions-callback
-  spinner: {
-    instance: ora.Ora;
-    progressPrefix: string; // Prefix message while downloading (before the `XXX%`)
-    progressSuffix: string; // Suffix message while downloading (after the `XXX%`)
-    successMessage: string; // Success message once the download has ended
-  }
-}
-```
+**If you want to use [rimraf][link-rimraf] or [make-dir][link-make-dir] before calling `proload()`**
+in your code, you will have to use the `.sync()` method instead of the `await` mode. I don't know
+yet why this issue happens and will try my best to find a fix.
 
 ## Contribute
 
@@ -108,4 +126,6 @@ npm i
 [link-license]: https://github.com/ivangabriele/proload/blob/master/LICENSE
 [link-ora]: https://github.com/sindresorhus/ora
 [link-npm]: https://www.npmjs.com/package/proload
+[link-rimraf]: https://github.com/isaacs/rimraf
+[link-make-dir]: https://github.com/sindresorhus/make-dir
 [link-travis]: https://travis-ci.com/ivangabriele/proload
