@@ -6,7 +6,7 @@ const path = require("path");
 const request = require("request");
 const rorre = require("rorre");
 
-const SAFE_RESOLVE_TIMEOUT = 1000;
+const SAFE_RESOLVE_TIMEOUT = 2000;
 
 const E = rorre.declare({
   PRM_DFP_NOT_STRING: "<destFilePath> must be a string or left undefined to get a data buffer.",
