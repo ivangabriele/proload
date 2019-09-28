@@ -1,9 +1,8 @@
 /.dependabot
 /coverage
-/node_modules
 /scripts
 
-/test.*
+/.test
 
 /.editorconfig
 /.eslintignore
