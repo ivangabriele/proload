@@ -1,12 +1,25 @@
 const fs = require("fs");
 const mockProcess = require("jest-mock-process");
 const ora = require("ora");
+const rimraf = require("rimraf");
 
 const proload = require("./proload");
 
-const FILE_PATH = "./test.zip";
-const FILE_SIZE = 3410026;
-const FILE_URI = "https://www.gutenberg.org/files/308/308-h.zip";
+const FILES = [
+  {
+    dirPath: "./.test",
+    fileName: "test.zip",
+    fileSize: 3410026,
+    fileUri: "https://www.gutenberg.org/files/308/308-h.zip"
+  },
+  {
+    dirPath: "./.test",
+    fileName: "test.tsv",
+    fileSize: 25850780,
+    fileUri: "http://www.lexique.org/databases/Lexique383/Lexique383.tsv"
+  }
+];
+
 const TIMEOUT = 30000;
 
 describe("proload()", () => {
@@ -20,71 +33,82 @@ describe("proload()", () => {
     mockStderr.mockRestore();
   });
 
-  describe("Buffer", () => {
-    test(
-      "",
-      async () => {
-        const dataBuffer = await proload(FILE_URI);
+  FILES.forEach(({ dirPath, fileName, fileSize, fileUri }) => {
+    const filePath = `${dirPath}/${fileName}`;
 
-        expect(mockStderr).toHaveBeenCalled();
-        expect(dataBuffer.length).toStrictEqual(FILE_SIZE);
-      },
-      TIMEOUT
-    );
-  });
+    describe(fileUri, () => {
+      beforeEach(() => {
+        rimraf.sync(dirPath);
+      });
 
-  describe("File", () => {
-    test(
-      "",
-      async () => {
-        await proload(FILE_URI, FILE_PATH);
+      describe("Buffer", () => {
+        test(
+          "should match the expected buffer size",
+          async () => {
+            const dataBuffer = await proload(fileUri);
 
-        expect(mockStderr).toHaveBeenCalled();
-        expect(fs.readFileSync(FILE_PATH).length).toStrictEqual(FILE_SIZE);
-      },
-      TIMEOUT
-    );
-  });
+            expect(mockStderr).toHaveBeenCalled();
+            expect(dataBuffer.length).toStrictEqual(fileSize);
+          },
+          TIMEOUT
+        );
+      });
 
-  describe("Ora", () => {
-    describe("Buffer", () => {
-      test(
-        "",
-        async () => {
-          const spinner = ora();
-          const options = {
-            spinner: {
-              instance: spinner
-            }
-          };
-          const dataBuffer = await proload(FILE_URI, options);
-          spinner.stop();
+      describe("File", () => {
+        test(
+          "should match the expected file size",
+          async () => {
+            await proload(fileUri, filePath);
 
-          expect(mockStderr).toHaveBeenCalled();
-          expect(dataBuffer.length).toStrictEqual(FILE_SIZE);
-        },
-        TIMEOUT
-      );
-    });
+            expect(mockStderr).toHaveBeenCalled();
+            expect(fs.readFileSync(filePath).length).toStrictEqual(fileSize);
+          },
+          TIMEOUT
+        );
+      });
 
-    describe("File", () => {
-      test(
-        "",
-        async () => {
-          const spinner = ora();
-          const options = {
-            spinner: {
-              instance: spinner
-            }
-          };
-          await proload(FILE_URI, FILE_PATH, options);
-          spinner.stop();
+      // eslint-disable-next-line no-loop-func
+      describe("Ora", () => {
+        describe("Buffer", () => {
+          test(
+            "should match the expected buffer size",
+            async () => {
+              const spinner = ora();
+              const options = {
+                spinner: {
+                  instance: spinner
+                }
+              };
+              const dataBuffer = await proload(fileUri, options);
+              spinner.stop();
 
-          expect(mockStderr).toHaveBeenCalled();
-          expect(fs.readFileSync(FILE_PATH).length).toStrictEqual(FILE_SIZE);
-        },
-        TIMEOUT
-      );
+              expect(mockStderr).toHaveBeenCalled();
+              expect(dataBuffer.length).toStrictEqual(fileSize);
+            },
+            TIMEOUT
+          );
+        });
+
+        describe("File", () => {
+          test(
+            "should match the expected file size",
+            async () => {
+              const spinner = ora();
+              const options = {
+                spinner: {
+                  instance: spinner
+                }
+              };
+              await proload(fileUri, filePath, options);
+              spinner.stop();
+
+              expect(mockStderr).toHaveBeenCalled();
+              expect(fs.readFileSync(filePath).length).toStrictEqual(fileSize);
+            },
+            TIMEOUT
+          );
+        });
+      });
     });
   });
 });
