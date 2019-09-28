@@ -1,0 +1,13 @@
+/.dependabot
+/coverage
+/node_modules
+/scripts
+
+/test.*
+
+/.editorconfig
+/.eslintignore
+/.eslintrc.yml
+/.gitattributes
+/.travis.yml
+/RELEASE_NOTES.md
