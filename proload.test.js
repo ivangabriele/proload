@@ -5,15 +5,17 @@ const rimraf = require("rimraf");
 
 const proload = require("./proload");
 
+const TEST_DIR_PATH = "./.test";
+
 const FILES = [
   {
-    dirPath: "./.test",
+    dirPath: TEST_DIR_PATH,
     fileName: "test.zip",
     fileSize: 3410026,
     fileUri: "https://www.gutenberg.org/files/308/308-h.zip"
   },
   {
-    dirPath: "./.test",
+    dirPath: TEST_DIR_PATH,
     fileName: "test.tsv",
     fileSize: 25850780,
     fileUri: "http://www.lexique.org/databases/Lexique383/Lexique383.tsv"
@@ -31,6 +33,7 @@ describe("proload()", () => {
 
   afterAll(() => {
     mockStderr.mockRestore();
+    rimraf.sync(TEST_DIR_PATH);
   });
 
   FILES.forEach(({ dirPath, fileName, fileSize, fileUri }) => {
