@@ -13,6 +13,12 @@ File & Buffer URI downloader with a progress bar, compatible with [ora][link-ora
 npm i -D proload
 ```
 
+### Features
+
+- Ora optional integration (= ability to attach an existing ora instance)
+- Automatically creates the destination directory if it does not exist.
+- Can return a buffer of the data instead of creating a new file.
+
 ## Examples
 
 ### Download to Buffer
