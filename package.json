@@ -6,7 +6,6 @@
   "main": "./proload.js",
   "types": "./proload.d.ts",
   "scripts": {
-    "build": "rollup -c",
     "ci:generate:release_notes": "node ./scripts/ci/generate_release_notes.js",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint ./*.js",
