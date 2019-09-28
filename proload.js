@@ -70,46 +70,52 @@ function createRequest(uri, config, resolve, reject) {
 }
 
 function proload(uri, destFilePathOrOptions, options) {
-  if (typeof uri !== "string") {
-    return Promise.reject(E.PRM_URI_NOT_STRING);
-  }
-
-  let config;
-  if (options !== undefined) {
-    config = options;
-
-    if (destFilePathOrOptions !== undefined && typeof destFilePathOrOptions !== "string") {
-      return Promise.reject(E.PRM_DFP_NOT_STRING);
+  try {
+    if (typeof uri !== "string") {
+      return Promise.reject(E.PRM_URI_NOT_STRING);
     }
-  } else if (destFilePathOrOptions !== undefined) {
-    if (destFilePathOrOptions.constructor.name === "Object") {
-      config = destFilePathOrOptions;
-    } else if (typeof destFilePathOrOptions !== "string") {
-      return Promise.reject(E.PRM_DFP_NOT_STRING);
+
+    let config;
+    if (options !== undefined) {
+      config = options;
+
+      if (destFilePathOrOptions !== undefined && typeof destFilePathOrOptions !== "string") {
+        return Promise.reject(E.PRM_DFP_NOT_STRING);
+      }
+    } else if (destFilePathOrOptions !== undefined) {
+      if (destFilePathOrOptions.constructor.name === "Object") {
+        config = destFilePathOrOptions;
+      } else if (typeof destFilePathOrOptions !== "string") {
+        return Promise.reject(E.PRM_DFP_NOT_STRING);
+      } else {
+        config = {};
+      }
     } else {
       config = {};
     }
-  } else {
-    config = {};
-  }
 
-  if (
-    config.spinner !== undefined &&
-    config.spinner.instance !== undefined &&
-    config.spinner.instance.constructor.name !== "Ora"
-  ) {
-    return Promise.reject(E.PRM_SPR_NOT_STRING);
-  }
-
-  return new Promise((resolve, reject) => {
-    if (typeof destFilePathOrOptions === "string") {
-      createRequest(uri, config, resolve, reject).pipe(fs.createWriteStream(destFilePathOrOptions));
-
-      return;
+    if (
+      config.spinner !== undefined &&
+      config.spinner.instance !== undefined &&
+      config.spinner.instance.constructor.name !== "Ora"
+    ) {
+      return Promise.reject(E.PRM_SPR_NOT_STRING);
     }
 
-    createRequest(uri, config, resolve, reject);
-  });
+    return new Promise((resolve, reject) => {
+      if (typeof destFilePathOrOptions === "string") {
+        createRequest(uri, config, resolve, reject).pipe(
+          fs.createWriteStream(destFilePathOrOptions)
+        );
+
+        return;
+      }
+
+      createRequest(uri, config, resolve, reject);
+    });
+  } catch (err) {
+    return Promise.reject(err);
+  }
 }
 
 module.exports = proload;
