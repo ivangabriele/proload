@@ -11,7 +11,8 @@ File & Buffer URI downloader with a progress bar, compatible with [ora][link-ora
 
 1. [Install](#install)
 1. [Features](#features)
-1. [Options](#options)
+1. [API](#api)
+   1. [Options](#options)
 1. [Examples](#examples)
    1. [Download to Buffer](#download-to-buffer)
    1. [Download to File](#download-to-file)
@@ -31,7 +32,14 @@ npm i -D proload
 - Automatically creates the destination directory if it does not exist.
 - Can return a buffer of the data instead of creating a new file.
 
-## Options
+## API
+
+```ts
+proload(uri: string, options?: Object): Promise<Buffer>
+proload(uri: string, destFilePath: string, options?: Object): Promise<Buffer>
+```
+
+### Options
 
 ```ts
 {
