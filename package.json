@@ -19,7 +19,7 @@
     "numeral": "2.0.6",
     "ora": "4.0.2",
     "request": "2.88.0",
-    "rorre": "1.1.0"
+    "rorre": "1.2.0"
   },
   "devDependencies": {
     "@types/jest": "24.0.18",
