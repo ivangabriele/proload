@@ -9,7 +9,7 @@
     "ci:generate:release_notes": "node ./scripts/ci/generate_release_notes.js",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint ./*.js",
-    "test:unit": "jest --coverage ./*.test.js",
+    "test:unit": "jest --bail --coverage ./*.test.js",
     "test:watch": "npm run test:unit --watch",
     "preversion": "npm test",
     "postversion": "git push origin HEAD && git push --tags"
