@@ -6,109 +6,107 @@ const path = require("path");
 const request = require("request");
 const rorre = require("rorre");
 
+const DEFAULT_SPINNER_OPTIONS = {
+  instance: ora({ discardStdin: false }),
+  progressPrefix: "",
+  progressSuffix: "",
+  successMessage: "100%"
+};
 const SAFE_RESOLVE_TIMEOUT = 2000;
 
 const E = rorre.declare({
-  PRM_DFP_NOT_STRING: "<destFilePath> must be a string or left undefined to get a data buffer.",
-  PRM_SPR_NOT_STRING: "<spinner> must be an instance or Ora.",
-  PRM_URI_NOT_STRING: "<uri> is mandatory and must be a string."
+  PRM_DFP_NOT_STR: "<destFilePath> must be a string or left undefined to get a data buffer.",
+  PRM_OPT_NOT_OBJ: "<options>` must be an object or left undefined.",
+  PRM_OPT_SPR_NOT_ORA: "<options>.request.instance must be an instance or Ora.",
+  PRM_OPT_REQ_NOT_OBJ: "<options>.request must be an object or left undefined.",
+  PRM_URI_NOT_STR: "<uri> is mandatory and must be a string."
 });
 
-function createRequest(uri, config, resolve, reject) {
-  const { request: requestOptions, spinner } = config;
-
-  // eslint-disable-next-line no-underscore-dangle
-  const _spinner = spinner !== undefined ? spinner : {};
-  if (_spinner.instance === undefined) {
-    _spinner.instance = ora();
+class Proload {
+  constructor() {
+    this.dataCurrentLength = 0;
+    this.dataChunks = [];
+    this.dataTotalLength = 0;
+    this.destFilePath = null;
+    this.uri = null;
+    this.withSpinnerInstance = false;
   }
 
-  const { instance: spinnerInstance, progressPrefix, progressSuffix, successMessage } = _spinner;
+  init(uri, destFilePathOrOptions, options) {
+    this.initProps(uri, destFilePathOrOptions, options);
+  }
 
-  const dataChunks = [];
-  let currentLength = 0;
-  let totalLength = 0;
-
-  return request(uri, requestOptions)
-    .on("error", reject)
-    .on("response", res => {
-      if (!Number.isNaN(res.headers["content-length"])) {
-        const contentLength = Number(res.headers["content-length"]);
-        if (contentLength > 0) {
-          totalLength = contentLength;
-          spinnerInstance.start(`${progressPrefix || ""}  0%${progressSuffix || ""}`);
-
-          return;
-        }
-      }
-
-      spinner.start("???%");
-    })
-    .on("data", chunk => {
-      dataChunks.push(chunk);
-
-      currentLength += chunk.length;
-
-      if (totalLength !== 0) {
-        const percentage = numeral(currentLength / totalLength).format("0%");
-        const text = `${progressPrefix || ""}${percentage.padStart(4, " ")}${progressSuffix || ""}`;
-
-        spinnerInstance.text = text;
-      }
-    })
-    .on("end", () => {
-      spinnerInstance.succeed(successMessage || "100%");
-
-      if (spinner === undefined || spinner.instance === undefined) {
-        spinnerInstance.stop();
-      }
-
-      setTimeout(() => {
-        const dataBuffer = Buffer.concat(dataChunks);
-
-        resolve(dataBuffer);
-      }, SAFE_RESOLVE_TIMEOUT);
-    });
-}
-
-function proload(uri, destFilePathOrOptions, options) {
-  try {
+  initProps(uri, destFilePathOrOptions, options) {
     if (typeof uri !== "string") {
-      return Promise.reject(E.PRM_URI_NOT_STRING);
+      throw E.PRM_URI_NOT_STR;
     }
 
-    let config;
-    if (options !== undefined) {
-      config = options;
+    this.uri = uri;
 
-      if (destFilePathOrOptions !== undefined && typeof destFilePathOrOptions !== "string") {
-        return Promise.reject(E.PRM_DFP_NOT_STRING);
-      }
-    } else if (destFilePathOrOptions !== undefined) {
+    if (destFilePathOrOptions !== undefined) {
       if (destFilePathOrOptions.constructor.name === "Object") {
-        config = destFilePathOrOptions;
-      } else if (typeof destFilePathOrOptions !== "string") {
-        return Promise.reject(E.PRM_DFP_NOT_STRING);
-      } else {
-        config = {};
+        this.initConfig(destFilePathOrOptions);
+
+        return;
       }
-    } else {
-      config = {};
+
+      if (typeof destFilePathOrOptions !== "string") throw E.PRM_DFP_NOT_STR;
+
+      this.destFilePath = destFilePathOrOptions;
+
+      if (options !== undefined) {
+        if (options.constructor.name !== "Object") throw E.PRM_OPT_NOT_OBJ;
+
+        this.initConfig(options);
+
+        return;
+      }
     }
 
-    if (
-      config.spinner !== undefined &&
-      config.spinner.instance !== undefined &&
-      config.spinner.instance.constructor.name !== "Ora"
-    ) {
-      return Promise.reject(E.PRM_SPR_NOT_STRING);
+    this.initConfig({});
+  }
+
+  initConfig({ request: _request, spinner }) {
+    const config = {
+      spinner: DEFAULT_SPINNER_OPTIONS,
+      request: {}
+    };
+
+    if (spinner !== undefined) {
+      if (spinner.instance !== undefined) {
+        if (spinner.instance.constructor.name !== "Ora") throw E.PRM_OPT_SPR_NOT_ORA;
+
+        this.withSpinnerInstance = true;
+      }
+
+      // https://github.com/sindresorhus/ora/issues/132
+      // eslint-disable-next-line no-param-reassign
+      spinner.instance.discardStdin = false;
+
+      config.spinner = {
+        ...config.spinner,
+        ...spinner
+      };
     }
 
+    if (_request !== undefined) {
+      if (_request.constructor.name !== "Object") throw E.PRM_OPT_REQ_NOT_OBJ;
+
+      config.request = {
+        ...config.request,
+        ..._request
+      };
+    }
+
+    this.config = config;
+  }
+
+  run() {
     return new Promise((resolve, reject) => {
-      if (typeof destFilePathOrOptions === "string") {
-        const destFilePath = destFilePathOrOptions.replace(path.sep, "/");
-        if (/\//.test(destFilePath)) {
-          const destFilePaths = destFilePath.split("/");
+      if (this.destFilePath !== null) {
+        const normalizedDestFilePath = this.destFilePath.replace(path.sep, "/");
+        if (/\//.test(normalizedDestFilePath)) {
+          const destFilePaths = normalizedDestFilePath.split("/");
           const destDirPath = destFilePaths.slice(0, destFilePaths.length - 1).join("/");
 
           if (!fs.existsSync(destDirPath)) {
@@ -116,15 +114,73 @@ function proload(uri, destFilePathOrOptions, options) {
           }
         }
 
-        createRequest(uri, config, resolve, reject).pipe(
-          fs.createWriteStream(destFilePathOrOptions)
-        );
+        this.createRequest(resolve, reject).pipe(fs.createWriteStream(this.destFilePath));
 
         return;
       }
 
-      createRequest(uri, config, resolve, reject);
+      this.createRequest(resolve, reject);
     });
+  }
+
+  createRequest(resolve, reject) {
+    const { progressPrefix, progressSuffix, successMessage } = this.config.spinner;
+
+    this.config.spinner.instance.start();
+
+    return request(this.uri, this.config.request)
+      .on("error", reject)
+      .on("response", res => {
+        if (!Number.isNaN(res.headers["content-length"])) {
+          this.dataTotalLength = Number(res.headers["content-length"]);
+
+          if (this.dataTotalLength > 0) {
+            this.updateSpinner(`${progressPrefix || ""}  0%${progressSuffix || ""}`);
+
+            return;
+          }
+        }
+
+        this.updateSpinner("???%");
+      })
+      .on("data", chunk => {
+        this.dataChunks.push(chunk);
+
+        this.dataCurrentLength += chunk.length;
+
+        if (this.dataTotalLength > 0) {
+          const percentage = numeral(this.dataCurrentLength / this.dataTotalLength).format("0%");
+          const text = `${progressPrefix || ""}${percentage.padStart(4, " ")}${progressSuffix ||
+            ""}`;
+
+          this.updateSpinner(text);
+        }
+      })
+      .on("end", () => {
+        this.config.spinner.instance.succeed(successMessage || "100%");
+
+        if (!this.withSpinnerInstance) {
+          this.config.spinner.instance.stop();
+        }
+
+        setTimeout(() => {
+          const dataBuffer = Buffer.concat(this.dataChunks);
+
+          resolve(dataBuffer);
+        }, SAFE_RESOLVE_TIMEOUT);
+      });
+  }
+
+  updateSpinner(message) {
+    this.config.spinner.instance.text = message;
+  }
+}
+
+function proload(uri, destFilePathOrOptions, options) {
+  try {
+    const instance = new Proload();
+    instance.init(uri, destFilePathOrOptions, options);
+    return instance.run();
   } catch (err) {
     return Promise.reject(err);
   }
