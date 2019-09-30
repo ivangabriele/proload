@@ -7,7 +7,9 @@ const request = require("request");
 const rorre = require("rorre");
 
 const DEFAULT_SPINNER_OPTIONS = {
-  instance: ora({ discardStdin: false }),
+  instance: ora({
+    discardStdin: process.platform !== "win32"
+  }),
   progressPrefix: "",
   progressSuffix: "",
   successMessage: "100%"
@@ -81,7 +83,7 @@ class Proload {
 
       // https://github.com/sindresorhus/ora/issues/132
       // eslint-disable-next-line no-param-reassign
-      spinner.instance.discardStdin = false;
+      spinner.instance.discardStdin = process.platform !== "win32";
 
       config.spinner = {
         ...config.spinner,

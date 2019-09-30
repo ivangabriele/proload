@@ -1,9 +1,13 @@
 const fs = require("fs");
 const mockProcess = require("jest-mock-process");
 const ora = require("ora");
-const rimraf = require("rimraf");
+// eslint-disable-next-line no-underscore-dangle
+const _rimraf = require("rimraf");
+const { promisify } = require("util");
 
 const proload = require("./proload");
+
+const rimraf = promisify(_rimraf);
 
 const TEST_DIR_PATH = "./.test";
 const TEST_TIMEOUT = 120000;
@@ -30,17 +34,17 @@ describe("proload()", () => {
     mockStderr = mockProcess.mockProcessStderr();
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     mockStderr.mockRestore();
-    rimraf.sync(TEST_DIR_PATH);
+    await rimraf(TEST_DIR_PATH);
   });
 
   FILES.forEach(({ dirPath, fileName, fileSize, fileUri }) => {
     const filePath = `${dirPath}/${fileName}`;
 
     describe(fileUri, () => {
-      beforeEach(() => {
-        rimraf.sync(dirPath);
+      beforeEach(async () => {
+        await rimraf(dirPath);
       });
 
       describe("Buffer", () => {
