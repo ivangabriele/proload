@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.23",
-    "@types/node": "12.12.8",
+    "@types/node": "12.12.11",
     "@types/request": "2.48.3",
     "coveralls": "3.0.7",
     "eslint": "6.6.0",
