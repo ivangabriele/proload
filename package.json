@@ -22,7 +22,7 @@
     "rorre": "1.2.0"
   },
   "devDependencies": {
-    "@types/jest": "24.0.25",
+    "@types/jest": "24.9.0",
     "@types/node": "12.12.13",
     "@types/request": "2.48.4",
     "coveralls": "3.0.9",
